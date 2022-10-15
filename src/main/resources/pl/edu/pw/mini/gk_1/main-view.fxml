@@ -3,11 +3,13 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -60,8 +62,18 @@
                   <RadioButton fx:id="normalDrawingRadioButton" layoutX="39.0" layoutY="109.0" mnemonicParsing="false" selected="true" text="Normalne">
                      <toggleGroup>
                         <ToggleGroup fx:id="g2" />
-                     </toggleGroup></RadioButton>
+                     </toggleGroup>
+                  </RadioButton>
                   <RadioButton fx:id="bresenhamDrawingRadioButton" layoutX="39.0" layoutY="138.0" mnemonicParsing="false" text="Bresenham" toggleGroup="$g2" />
+                  <RadioButton fx:id="lengthRadioButton" layoutX="43.0" layoutY="306.0" mnemonicParsing="false" selected="true" text="Długość">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="g3" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <ToggleButton fx:id="relationToggleButton" layoutX="39.0" layoutY="262.0" mnemonicParsing="false" prefWidth="144.0" text="Relacje" toggleGroup="$g1" />
+                  <TextField fx:id="lengthTextField" layoutX="120.0" layoutY="301.0" prefHeight="26.0" prefWidth="60.0" />
+                  <RadioButton layoutX="43.0" layoutY="336.0" mnemonicParsing="false" text="Prostopadłość" toggleGroup="$g3" />
+                  <Button fx:id="addRelationButton" layoutX="42.0" layoutY="365.0" mnemonicParsing="false" text="Dodaj" />
           </children>
         </AnchorPane>
       </items>

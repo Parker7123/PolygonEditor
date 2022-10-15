@@ -3,15 +3,16 @@ package pl.edu.pw.mini.gk_1;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
-import pl.edu.pw.mini.gk_1.managers.AnimationManager;
-import pl.edu.pw.mini.gk_1.managers.DeletingManager;
-import pl.edu.pw.mini.gk_1.managers.DrawingManager;
-import pl.edu.pw.mini.gk_1.managers.ManipulationManager;
+import pl.edu.pw.mini.gk_1.managers.*;
+import pl.edu.pw.mini.gk_1.relations.RelationMode;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
 
 import java.net.URL;
@@ -24,34 +25,43 @@ public class MainViewController implements Initializable {
     private Canvas canvas;
 
     @FXML
+    private ToggleButton relationToggleButton;
+
+    @FXML
     private ToggleButton deletingButton;
 
     @FXML
     private ToggleButton drawingButton;
-
     @FXML
     private ToggleButton manipiulatingButton;
     @FXML
     private RadioButton normalDrawingRadioButton;
     @FXML
     private RadioButton bresenhamDrawingRadioButton;
+    @FXML
+    private TextField lengthTextField;
+    @FXML
+    private ToggleButton lengthRadioButton;
+    @FXML
+    private Button addRelationButton;
     private DrawingManager drawingManager;
     private DeletingManager deletingManager;
     private AnimationManager animationManager;
     private ManipulationManager manipulationManager;
+    private RelationManager relationManager;
 
     @FXML
     void onCanvasMouseClicked(MouseEvent event) {
-        if(drawingButton.isSelected()) {
+        if (drawingButton.isSelected()) {
             drawingManager.onMouseClick(event);
-        } else if(deletingButton.isSelected()) {
+        } else if (deletingButton.isSelected()) {
             deletingManager.onMouseClick(event);
-            drawingManager.clearCanvas();
-            drawingManager.drawPolygons();
+            redrawPolygons();
         } else if (manipiulatingButton.isSelected()) {
             manipulationManager.onMouseClick(event);
-            drawingManager.clearCanvas();
-            drawingManager.drawPolygons();
+            redrawPolygons();
+        } else if (relationToggleButton.isSelected()) {
+            relationManager.onMouseClick(event);
         }
     }
 
@@ -59,6 +69,9 @@ public class MainViewController implements Initializable {
     void onCanvasMouseMoved(MouseEvent event) {
         drawingManager.onMouseMoved(event);
         animationManager.onMouseMoved(event);
+        if (relationToggleButton.isSelected()) {
+            relationManager.onMouseMoved(event);
+        }
     }
 
     @FXML
@@ -91,8 +104,43 @@ public class MainViewController implements Initializable {
         deletingManager = new DeletingManager(canvas.getGraphicsContext2D(), polygons);
         animationManager = new AnimationManager(canvas.getGraphicsContext2D(), polygons);
         manipulationManager = new ManipulationManager(canvas.getGraphicsContext2D(), polygons);
+        relationManager = new RelationManager(canvas.getGraphicsContext2D(), polygons, lengthTextField.textProperty());
         normalDrawingRadioButton.setOnAction(event -> setDrawingMode(DrawingMode.NORMAL));
         bresenhamDrawingRadioButton.setOnAction(event -> setDrawingMode(DrawingMode.BRESENHAM));
+        lengthTextField.disableProperty().bind(lengthRadioButton.selectedProperty().not()
+                .or(relationToggleButton.selectedProperty().not()));
+        lengthRadioButton.disableProperty().bind(relationToggleButton.selectedProperty().not());
+        addRelationButton.disableProperty().bind(relationToggleButton.selectedProperty().not());
+        relationToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if(!newValue) {
+                relationManager.resetRelationMode();
+            }
+        });
+
+        relationManager.setRelationMode(RelationMode.LENGTH);
+        addRelationButton.setOnAction(event -> {
+            if (lengthRadioButton.isSelected()) {
+                addLengthRelation();
+            }
+        });
+        lengthTextField.setOnKeyPressed(event -> {
+            if (event.getCode() == KeyCode.ENTER && lengthRadioButton.isSelected()) {
+                if (lengthRadioButton.isSelected()) {
+                    addLengthRelation();
+                }
+            }
+        });
+    }
+
+    private void addLengthRelation() {
+        relationManager.addLengthRelation();
+        redrawPolygons();
+        relationManager.highlightSelectedEdge();
+    }
+
+    private void redrawPolygons() {
+        drawingManager.clearCanvas();
+        drawingManager.drawPolygons();
     }
 
     private void setDrawingMode(DrawingMode drawingMode) {
@@ -100,6 +148,7 @@ public class MainViewController implements Initializable {
         deletingManager.setDrawingMode(drawingMode);
         animationManager.setDrawingMode(drawingMode);
         manipulationManager.setDrawingMode(drawingMode);
+        relationManager.setDrawingMode(drawingMode);
 
         drawingManager.clearCanvas();
         drawingManager.drawPolygons();

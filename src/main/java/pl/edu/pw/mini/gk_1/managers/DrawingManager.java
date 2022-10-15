@@ -4,6 +4,7 @@ import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
@@ -18,10 +19,8 @@ public class DrawingManager extends AbstractManager {
 
     @Override
     public void onMouseClick(MouseEvent event) {
-        switch (event.getButton()) {
-            case PRIMARY:
-                onLeftMouseClick(event);
-                break;
+        if (event.getButton() == MouseButton.PRIMARY) {
+            onLeftMouseClick(event);
         }
     }
 

@@ -3,6 +3,8 @@ package pl.edu.pw.mini.gk_1.shapes;
 import javafx.geometry.Point2D;
 import pl.edu.pw.mini.gk_1.interfaces.Movable;
 
+import java.util.Objects;
+
 public class Edge implements Movable {
     private final Vertex vertex1;
     private final Vertex vertex2;
@@ -32,5 +34,19 @@ public class Edge implements Movable {
 
     public Point2D midPoint() {
         return vertex1.getPoint().midpoint(vertex2.getPoint());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Edge)) return false;
+        Edge edge = (Edge) o;
+        return vertex1.equals(edge.vertex1) && vertex2.equals(edge.vertex2) ||
+                vertex1.equals(edge.vertex2) && vertex2.equals(edge.vertex1);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(vertex1, vertex2);
     }
 }

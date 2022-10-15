@@ -6,6 +6,8 @@ import pl.edu.pw.mini.gk_1.helpers.DrawingHelper;
 import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
 import pl.edu.pw.mini.gk_1.interfaces.Drawable;
 
+import java.util.function.Consumer;
+
 public abstract class AbstractPolygon implements Drawable {
 
     private static final float VERTEX_RADIUS = 2;
@@ -18,6 +20,10 @@ public abstract class AbstractPolygon implements Drawable {
 
     @Override
     public void draw(GraphicsContext graphicsContext, DrawingMode drawingMode) {
+        drawWithModifier(graphicsContext, drawingMode, edge -> {});
+    }
+
+    protected void drawWithModifier(GraphicsContext graphicsContext, DrawingMode drawingMode, Consumer<Edge> edgeModifier) {
         if (vertices.isEmpty()) return;
         var iterator = vertices.iterator();
         Vertex vertex = vertices.getFirst();
@@ -25,6 +31,7 @@ public abstract class AbstractPolygon implements Drawable {
         while (iterator.hasNext()) {
             var nextVertex = iterator.next();
             DrawingHelper.drawLineBetweenTwoPoints(graphicsContext, vertex.getPoint(), nextVertex.getPoint(), drawingMode);
+            edgeModifier.accept(new Edge(vertex, nextVertex));
             drawVertex(graphicsContext, nextVertex);
             vertex = nextVertex;
         }
