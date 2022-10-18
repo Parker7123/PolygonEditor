@@ -39,9 +39,10 @@ public class DeletingManager extends AbstractManager {
             var pair = polygonVertexPair.get();
             var polygon = pair.getPolygon();
             var vertex = pair.getVertex();
-            polygon.deleteVertex(vertex);
-            if (polygon.getVertices().size() < 3) {
+            if (polygon.getVertices().size() == 3) {
                 polygons.remove(polygon);
+            } else {
+                polygon.deleteVertex(vertex);
             }
             return Optional.of(vertex);
         }
@@ -54,7 +55,7 @@ public class DeletingManager extends AbstractManager {
             var polygon = pair.getPolygon();
             var edge = pair.getEdge();
             var newVertex = new Vertex(edge.midPoint());
-            long indexOfNewVertex = polygon.getVertices().stream().takeWhile(v -> !v.equals(edge.getVertex1())).count();
+            long indexOfNewVertex = polygon.getVertices().indexOf(edge.getVertex1());
             polygon.addVertex((int) indexOfNewVertex + 1, newVertex);
         });
     }

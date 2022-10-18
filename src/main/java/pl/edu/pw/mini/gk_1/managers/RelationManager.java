@@ -5,17 +5,21 @@ import javafx.beans.property.StringProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.transform.Affine;
 import pl.edu.pw.mini.gk_1.helpers.PointsHelper;
 import pl.edu.pw.mini.gk_1.relations.LengthRelation;
 import pl.edu.pw.mini.gk_1.relations.RelationMode;
 import pl.edu.pw.mini.gk_1.relations.RelationsContainer;
-import pl.edu.pw.mini.gk_1.shapes.Edge;
-import pl.edu.pw.mini.gk_1.shapes.Polygon;
-import pl.edu.pw.mini.gk_1.shapes.PolygonEdgePair;
+import pl.edu.pw.mini.gk_1.shapes.*;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class RelationManager extends AbstractManager {
     private final StringProperty lengthProperty;
@@ -35,50 +39,77 @@ public class RelationManager extends AbstractManager {
         updateLengthProperty();
     }
 
-    @Override
-    public void onMouseMoved(MouseEvent event) {
-       highlightSelectedEdge();
-    }
 
-    public void applyLengthRelation(LengthRelation relation) {
-        double length = relation.getLength();
-        Edge edge = relation.getEdge();
+    public void applyLengthRelation(Edge edge, boolean backwards) {
+        LengthRelation relation = edge.getLengthRelation().orElseThrow();
         Point2D point1 = edge.getVertex1().getPoint();
         Point2D point2 = edge.getVertex2().getPoint();
-        double edgeLength = point1.distance(point2);
-        double ratio = length / edgeLength;
+        if (backwards) {
+            var t = point1;
+            point1 = point2;
+            point2 = t;
+        }
+        double edgeLength = edge.length();
+        double ratio = relation.getLength() / edgeLength;
         double x = (1 - ratio) * point1.getX() + ratio * point2.getX();
         double y = (1 - ratio) * point1.getY() + ratio * point2.getY();
-        edge.getVertex2().setPoint(new Point2D(x, y));
-//        Point2D midPoint = point2.midpoint(point1);
-//        Point2D newPoint2 = new Point2D(midPoint.getX() + (Math.abs((point2.getX() - midPoint.getX())) * length / edgeLength),
-//                midPoint.getY() + (Math.abs((point2.getY() - midPoint.getY())) * length / edgeLength));
-//        Point2D newPoint1 = new Point2D(midPoint.getX() - (Math.abs((point1.getX() - midPoint.getX())) * length / edgeLength),
-//                midPoint.getY() - ((Math.abs(point1.getY() - midPoint.getY())) * length / edgeLength));
-//        edge.getVertex1().setPoint(newPoint1);
-//        edge.getVertex2().setPoint(newPoint2);
+        if (backwards) {
+            edge.getVertex1().setPoint(new Point2D(x, y));
+        } else {
+            edge.getVertex2().setPoint(new Point2D(x, y));
+        }
+    }
+
+    @Override
+    public void onMouseMoved(MouseEvent event) {
+        highlightSelectedEdge();
     }
 
     public void addLengthRelation() {
-        long time = Instant.now().toEpochMilli();
         polygonEdgePair.ifPresent(pair -> {
             Polygon polygon = pair.getPolygon();
             Edge edge = pair.getEdge();
-            RelationsContainer relationsContainer = polygon.getRelationsContainer();
-            relationsContainer.getLengthRelationForEdge(edge).ifPresentOrElse(relation -> {
+            edge.getLengthRelation().ifPresentOrElse(relation -> {
                 relation.setLength(getRequiredLength());
             }, () -> {
-                relationsContainer.addLengthRelation(new LengthRelation(edge, getRequiredLength()));
+                edge.setLengthRelation(new LengthRelation(getRequiredLength()));
             });
-            applyLengthRelation(relationsContainer.getLengthRelationForEdge(edge).get());
+            applyRelationsStartingAtVertex(new PolygonVertexPair(polygon, edge.getVertex1()));
         });
+    }
+
+    public void applyRelationsStartingAtVertex(PolygonVertexPair polygonVertexPair) {
+        Polygon polygon = polygonVertexPair.getPolygon();
+        Vertex vertex = polygonVertexPair.getVertex();
+        EdgesList edges = polygon.getEdges();
+
+        Stream.concat(
+                        polygon.getEdges().stream()
+                                .dropWhile(edge -> !edge.getVertex1().equals(vertex)),
+                        polygon.getEdges().stream().takeWhile(edge -> !edge.getVertex1().equals(vertex))
+                )
+                .takeWhile(edge -> edge.getLengthRelation().isPresent())
+                .forEach(edge -> applyLengthRelation(edge, false));
+
+        int num = edges.size() - 1;
+        Stream.concat(
+                        IntStream.rangeClosed(0, num)
+                                .mapToObj(i -> edges.get(num - i))
+                                .dropWhile(edge -> !edge.getVertex2().equals(vertex)),
+                        IntStream.rangeClosed(0, num)
+                                .mapToObj(i -> edges.get(num - i))
+                                .takeWhile(edge -> !edge.getVertex2().equals(vertex))
+                )
+                .takeWhile(edge -> edge.getLengthRelation().isPresent())
+                .forEach(edge -> applyLengthRelation(edge, true));
     }
 
     private void updateLengthProperty() {
         polygonEdgePair.ifPresentOrElse(pair -> {
             pair.getPolygon().getRelationsContainer().getLengthRelationForEdge(pair.getEdge()).ifPresentOrElse(relation -> {
                 lengthProperty.set(String.valueOf(relation.getLength()));
-            }, () -> lengthProperty.set(""));
+            }, () -> lengthProperty.set(
+                    BigDecimal.valueOf(pair.getEdge().length()).setScale(2, RoundingMode.HALF_UP).toPlainString()));
         }, () -> lengthProperty.set(""));
     }
 

@@ -12,37 +12,29 @@ import pl.edu.pw.mini.gk_1.relations.RelationsContainer;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class Polygon extends AbstractPolygon implements Movable {
+public class Polygon extends AbstractPolygon implements Movable, Cloneable {
 
     //    private final List<Relation> relations = new ArrayList<>();
+    private final EdgesList edges;
     private final RelationsContainer relationsContainer = new RelationsContainer();
 
-    public Polygon() {
-    }
-
-    public Polygon(ArrayList<Vertex> vertices) {
+    public Polygon(VerticesList vertices) {
         this.vertices.addAll(vertices);
+        this.edges = new EdgesList(vertices);
     }
 
     @Override
     public void draw(GraphicsContext graphicsContext, DrawingMode drawingMode) {
-        super.draw(graphicsContext, drawingMode);
-        drawWithModifier(graphicsContext, drawingMode, edge -> {
-            relationsContainer.getLengthRelationForEdge(edge).ifPresent(relation -> {
-                relation.draw(graphicsContext, drawingMode);
-            });
-        });
-        DrawingHelper.drawLineBetweenTwoPoints(
-                graphicsContext, vertices.getLast().getPoint(), vertices.getFirst().getPoint(), drawingMode);
-        relationsContainer.getLengthRelationForEdge(new Edge(vertices.getLast(), vertices.getFirst()))
-                .ifPresent(relation -> relation.draw(graphicsContext, drawingMode));
-
+        edges.forEach(edge -> edge.draw(graphicsContext, drawingMode));
     }
 
     public void deleteVertex(Vertex vertex) {
         vertices.remove(vertex);
         int vIndex = vertices.indexOf(vertex);
+        edges.removeAndRepair(vertex);
+
         if(vIndex > 0) {
             relationsContainer.removeLengthRelationFromEdge(new Edge(vertices.get(vIndex - 1), vertex));
         } else {
@@ -64,6 +56,11 @@ public class Polygon extends AbstractPolygon implements Movable {
         return rectangle.contains(point);
     }
 
+    public void addVertex(int position, Vertex vertex) {
+        edges.addVertex(vertices.get(position - 1), vertex);
+        vertices.add(position, vertex);
+    }
+
     @Override
     public void move(Point2D vector) {
         vertices.forEach(vertex -> vertex.move(vector));
@@ -73,7 +70,7 @@ public class Polygon extends AbstractPolygon implements Movable {
         return relationsContainer;
     }
 
-//    public List<Relation> getRelations() {
-//        return relations;
-//    }
+    public EdgesList getEdges() {
+        return edges;
+    }
 }

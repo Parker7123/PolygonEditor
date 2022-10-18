@@ -17,10 +17,12 @@ public class ManipulationManager extends AbstractManager {
     private PolygonVertexPair polygonVertexPair;
     private PolygonEdgePair polygonEdgePair;
     private ManipulationType manipulationType;
+    private final RelationManager relationManager;
     private Point2D prevDragPoint;
 
-    public ManipulationManager(GraphicsContext graphicsContext, List<Polygon> polygons) {
+    public ManipulationManager(GraphicsContext graphicsContext, List<Polygon> polygons, RelationManager relationManager) {
         super(graphicsContext, polygons);
+        this.relationManager = relationManager;
     }
 
     @Override
@@ -40,14 +42,20 @@ public class ManipulationManager extends AbstractManager {
         var vector = point.subtract(prevDragPoint);
         polygonVertexPair.getVertex().move(vector);
         prevDragPoint = point;
+        relationManager.applyRelationsStartingAtVertex(polygonVertexPair);
     }
 
     private void moveEdge(Point2D point) {
         if(polygonEdgePair == null) {
             return;
         }
+        var polygon = polygonEdgePair.getPolygon();
         var vector = point.subtract(prevDragPoint);
-        polygonEdgePair.getEdge().move(vector);
+        var edge = polygonEdgePair.getEdge();
+        edge.getVertex1().move(vector);
+        relationManager.applyRelationsStartingAtVertex(new PolygonVertexPair(polygonEdgePair.getPolygon(), edge.getVertex1()));
+        edge.getVertex2().move(vector);
+        relationManager.applyRelationsStartingAtVertex(new PolygonVertexPair(polygonEdgePair.getPolygon(), edge.getVertex2()));
         prevDragPoint = point;
     }
 

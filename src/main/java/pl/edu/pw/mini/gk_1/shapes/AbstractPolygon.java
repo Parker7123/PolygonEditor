@@ -41,10 +41,6 @@ public abstract class AbstractPolygon implements Drawable {
         vertices.add(vertex);
     }
 
-    public void addVertex(int position, Vertex vertex) {
-        vertices.add(position, vertex);
-    }
-
     private void drawVertex(GraphicsContext graphicsContext, Vertex vertex) {
         DrawingHelper.drawCircle(graphicsContext, vertex.getPoint(), VERTEX_RADIUS, Paint.valueOf("black"));
     }

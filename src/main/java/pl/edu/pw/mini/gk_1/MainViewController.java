@@ -103,8 +103,8 @@ public class MainViewController implements Initializable {
         drawingManager = new DrawingManager(canvas.getGraphicsContext2D(), polygons);
         deletingManager = new DeletingManager(canvas.getGraphicsContext2D(), polygons);
         animationManager = new AnimationManager(canvas.getGraphicsContext2D(), polygons);
-        manipulationManager = new ManipulationManager(canvas.getGraphicsContext2D(), polygons);
         relationManager = new RelationManager(canvas.getGraphicsContext2D(), polygons, lengthTextField.textProperty());
+        manipulationManager = new ManipulationManager(canvas.getGraphicsContext2D(), polygons, relationManager);
         normalDrawingRadioButton.setOnAction(event -> setDrawingMode(DrawingMode.NORMAL));
         bresenhamDrawingRadioButton.setOnAction(event -> setDrawingMode(DrawingMode.BRESENHAM));
         lengthTextField.disableProperty().bind(lengthRadioButton.selectedProperty().not()

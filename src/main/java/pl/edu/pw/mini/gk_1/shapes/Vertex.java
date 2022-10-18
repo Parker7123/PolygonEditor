@@ -3,6 +3,8 @@ package pl.edu.pw.mini.gk_1.shapes;
 import javafx.geometry.Point2D;
 import pl.edu.pw.mini.gk_1.interfaces.Movable;
 
+import java.util.Objects;
+
 public class Vertex implements Movable {
     private Point2D point;
 

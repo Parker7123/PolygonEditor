@@ -62,21 +62,13 @@ public abstract class AbstractManager {
     }
 
     public Optional<PolygonEdgePair> firstEdgeCloseEnough(Point2D point) {
-        return polygons.stream().flatMap(
-                polygon -> Stream.concat(IntStream.range(1, polygon.getVertices().size())
-                                .mapToObj(i -> {
-                                    var edge = new Edge(polygon.getVertices().get(i - 1), polygon.getVertices().get(i));
-                                    return new PolygonEdgePair(polygon, edge);
-                                }),
-                        Stream.of(new PolygonEdgePair(polygon,
-                                new Edge(polygon.getVertices().getLast(),
-                                        polygon.getVertices().getFirst())))
-                ).filter(pair -> {
+        return polygons.stream().flatMap(polygon ->
+                polygon.getEdges().stream().map(edge -> new PolygonEdgePair(polygon, edge))).filter(pair -> {
                             var edge = pair.getEdge();
                             var cumulativeDistance = point.distance(edge.getVertex1().getPoint()) +
                                     point.distance(edge.getVertex2().getPoint());
                             return cumulativeDistance >= edge.length() && cumulativeDistance < edge.length() + 0.5;
                         }
-                )).findFirst();
+                ).findFirst();
     }
 }

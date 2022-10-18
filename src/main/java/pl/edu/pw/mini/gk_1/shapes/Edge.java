@@ -1,20 +1,37 @@
 package pl.edu.pw.mini.gk_1.shapes;
 
 import javafx.geometry.Point2D;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Paint;
+import pl.edu.pw.mini.gk_1.helpers.DrawingHelper;
+import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
+import pl.edu.pw.mini.gk_1.interfaces.Drawable;
 import pl.edu.pw.mini.gk_1.interfaces.Movable;
+import pl.edu.pw.mini.gk_1.relations.LengthRelation;
 
 import java.util.Objects;
+import java.util.Optional;
 
-public class Edge implements Movable {
-    private final Vertex vertex1;
-    private final Vertex vertex2;
+public class Edge implements Movable, Drawable {
+    private static final float VERTEX_RADIUS = 2;
 
+    private Vertex vertex1;
+    private Vertex vertex2;
+    private LengthRelation lengthRelation;
     public Vertex getVertex1() {
         return vertex1;
     }
 
     public Vertex getVertex2() {
         return vertex2;
+    }
+
+    public void setVertex1(Vertex vertex1) {
+        this.vertex1 = vertex1;
+    }
+
+    public void setVertex2(Vertex vertex2) {
+        this.vertex2 = vertex2;
     }
 
     public Edge(Vertex vertex1, Vertex vertex2) {
@@ -48,5 +65,39 @@ public class Edge implements Movable {
     @Override
     public int hashCode() {
         return Objects.hash(vertex1, vertex2);
+    }
+
+    public Optional<LengthRelation> getLengthRelation() {
+        return Optional.ofNullable(lengthRelation);
+    }
+
+    public void setLengthRelation(LengthRelation lengthRelation) {
+        this.lengthRelation = lengthRelation;
+    }
+
+    public void applyLengthRelation() {
+        double length = lengthRelation.getLength();
+        Point2D point1 = getVertex1().getPoint();
+        Point2D point2 = getVertex2().getPoint();
+        double edgeLength = point1.distance(point2);
+        double ratio = length / edgeLength;
+        double x = (1 - ratio) * point1.getX() + ratio * point2.getX();
+        double y = (1 - ratio) * point1.getY() + ratio * point2.getY();
+        getVertex2().setPoint(new Point2D(x, y));
+    }
+
+    @Override
+    public void draw(GraphicsContext graphicsContext, DrawingMode drawingMode) {
+        DrawingHelper.drawLineBetweenTwoPoints(graphicsContext, vertex1.getPoint(), vertex2.getPoint(), drawingMode);
+        drawVertex(graphicsContext, vertex1);
+        drawVertex(graphicsContext, vertex2);
+        if(lengthRelation != null) {
+            Point2D textPoint = getVertex1().getPoint().midpoint(getVertex2().getPoint());
+            graphicsContext.fillText(String.valueOf(lengthRelation.getLength()), textPoint.getX() + 3, textPoint.getY() - 3);
+        }
+    }
+
+    private void drawVertex(GraphicsContext graphicsContext, Vertex vertex) {
+        DrawingHelper.drawCircle(graphicsContext, vertex.getPoint(), VERTEX_RADIUS, Paint.valueOf("black"));
     }
 }

@@ -1,8 +1,10 @@
 package pl.edu.pw.mini.gk_1.shapes;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
-public class VerticesList extends ArrayList<Vertex> {
+public class VerticesList extends LinkedList<Vertex> {
 
     public VerticesList() {
         super();
@@ -12,11 +14,7 @@ public class VerticesList extends ArrayList<Vertex> {
         super(list);
     }
 
-    public Vertex getLast() {
-        return get(size() - 1);
-    }
-
-    public Vertex getFirst() {
-        return get(0);
+    public VerticesList(List<Vertex> list) {
+        super(list);
     }
 }
