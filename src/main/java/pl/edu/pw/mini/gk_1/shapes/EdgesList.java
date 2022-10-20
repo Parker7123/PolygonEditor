@@ -10,6 +10,10 @@ public class EdgesList extends ArrayList<Edge> {
     private final Map<Vertex, Edge[]> vertexEdgeMap;
 
     public EdgesList(VerticesList vertices) {
+        if(vertices.isEmpty()) {
+            vertexEdgeMap = null;
+            return;
+        }
         var edges = Stream.concat(
                 IntStream.range(1, vertices.size()).mapToObj(i -> new Edge(vertices.get(i - 1), vertices.get(i))),
                 Stream.of(new Edge(vertices.getLast(), vertices.getFirst())))

@@ -1,4 +1,4 @@
-package pl.edu.pw.mini.gk_1;
+package pl.edu.pw.mini.gk_1.app;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,11 +39,15 @@ public class MainViewController implements Initializable {
     @FXML
     private RadioButton bresenhamDrawingRadioButton;
     @FXML
+    private RadioButton perpendicularRadioButton;
+    @FXML
     private TextField lengthTextField;
     @FXML
     private ToggleButton lengthRadioButton;
     @FXML
     private Button addRelationButton;
+    @FXML
+    private Button removeRelationButton;
     private DrawingManager drawingManager;
     private DeletingManager deletingManager;
     private AnimationManager animationManager;
@@ -110,17 +114,33 @@ public class MainViewController implements Initializable {
         lengthTextField.disableProperty().bind(lengthRadioButton.selectedProperty().not()
                 .or(relationToggleButton.selectedProperty().not()));
         lengthRadioButton.disableProperty().bind(relationToggleButton.selectedProperty().not());
+        perpendicularRadioButton.disableProperty().bind(relationToggleButton.selectedProperty().not());
         addRelationButton.disableProperty().bind(relationToggleButton.selectedProperty().not());
+        removeRelationButton.disableProperty().bind(relationToggleButton.selectedProperty().not());
         relationToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if(!newValue) {
                 relationManager.resetRelationMode();
             }
+        });
+        lengthRadioButton.setOnAction(event -> {
+            relationManager.setRelationMode(RelationMode.LENGTH);
+        });
+        perpendicularRadioButton.setOnAction(event -> {
+
+            relationManager.setRelationMode(RelationMode.PERPENDICULAR);
         });
 
         relationManager.setRelationMode(RelationMode.LENGTH);
         addRelationButton.setOnAction(event -> {
             if (lengthRadioButton.isSelected()) {
                 addLengthRelation();
+            } else if(perpendicularRadioButton.isSelected()) {
+                addPerpendicularRelation();
+            }
+        });
+        removeRelationButton.setOnAction(event -> {
+            if (lengthRadioButton.isSelected()) {
+                removeLengthRelation();
             }
         });
         lengthTextField.setOnKeyPressed(event -> {
@@ -130,12 +150,6 @@ public class MainViewController implements Initializable {
                 }
             }
         });
-    }
-
-    private void addLengthRelation() {
-        relationManager.addLengthRelation();
-        redrawPolygons();
-        relationManager.highlightSelectedEdge();
     }
 
     private void redrawPolygons() {
@@ -152,5 +166,23 @@ public class MainViewController implements Initializable {
 
         drawingManager.clearCanvas();
         drawingManager.drawPolygons();
+    }
+
+    private void addLengthRelation() {
+        relationManager.addLengthRelation();
+        redrawPolygons();
+        relationManager.highlightSelectedEdges();
+    }
+
+    private void addPerpendicularRelation() {
+        relationManager.addPerpendicularRelation();
+        redrawPolygons();
+        relationManager.highlightSelectedEdges();
+    }
+
+    private void removeLengthRelation() {
+        relationManager.removeLengthRelation();
+        redrawPolygons();
+        relationManager.highlightSelectedEdges();
     }
 }

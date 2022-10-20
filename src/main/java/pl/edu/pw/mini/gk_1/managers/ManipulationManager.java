@@ -70,6 +70,7 @@ public class ManipulationManager extends AbstractManager {
 
     public void onMouseDragged(MouseEvent event) {
         var point = PointsHelper.mouseEventToPoint2D(event);
+        if (manipulationType == null) manipulationType = POLYGON;
         switch (manipulationType) {
             case VERTEX:
                 moveVertex(point);

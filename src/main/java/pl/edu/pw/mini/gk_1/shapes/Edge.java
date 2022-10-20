@@ -8,6 +8,7 @@ import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
 import pl.edu.pw.mini.gk_1.interfaces.Drawable;
 import pl.edu.pw.mini.gk_1.interfaces.Movable;
 import pl.edu.pw.mini.gk_1.relations.LengthRelation;
+import pl.edu.pw.mini.gk_1.relations.PerpendicularRelation;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class Edge implements Movable, Drawable {
     private Vertex vertex1;
     private Vertex vertex2;
     private LengthRelation lengthRelation;
+    private PerpendicularRelation perpendicularRelation;
     public Vertex getVertex1() {
         return vertex1;
     }
@@ -75,15 +77,8 @@ public class Edge implements Movable, Drawable {
         this.lengthRelation = lengthRelation;
     }
 
-    public void applyLengthRelation() {
-        double length = lengthRelation.getLength();
-        Point2D point1 = getVertex1().getPoint();
-        Point2D point2 = getVertex2().getPoint();
-        double edgeLength = point1.distance(point2);
-        double ratio = length / edgeLength;
-        double x = (1 - ratio) * point1.getX() + ratio * point2.getX();
-        double y = (1 - ratio) * point1.getY() + ratio * point2.getY();
-        getVertex2().setPoint(new Point2D(x, y));
+    public void removeLengthRelation() {
+        this.lengthRelation = null;
     }
 
     @Override
@@ -95,9 +90,21 @@ public class Edge implements Movable, Drawable {
             Point2D textPoint = getVertex1().getPoint().midpoint(getVertex2().getPoint());
             graphicsContext.fillText(String.valueOf(lengthRelation.getLength()), textPoint.getX() + 3, textPoint.getY() - 3);
         }
+        if(perpendicularRelation != null) {
+            Point2D textPoint = getVertex1().getPoint().midpoint(getVertex2().getPoint());
+            graphicsContext.fillText("_|", textPoint.getX() - 5, textPoint.getY() + 5);
+        }
     }
 
     private void drawVertex(GraphicsContext graphicsContext, Vertex vertex) {
         DrawingHelper.drawCircle(graphicsContext, vertex.getPoint(), VERTEX_RADIUS, Paint.valueOf("black"));
+    }
+
+    public Optional<PerpendicularRelation> getPerpendicularRelation() {
+        return Optional.ofNullable(perpendicularRelation);
+    }
+
+    public void setPerpendicularRelation(PerpendicularRelation perpendicularRelation) {
+        this.perpendicularRelation = perpendicularRelation;
     }
 }

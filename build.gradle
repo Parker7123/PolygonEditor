@@ -24,8 +24,8 @@ tasks.withType(JavaCompile) {
 }
 
 application {
-    mainModule = 'pl.edu.pw.mini.gk_1'
-    mainClass = 'pl.edu.pw.mini.gk_1.HelloApplication'
+    mainModule = 'pl.edu.pw.mini.gk_1.app'
+    mainClass = 'pl.edu.pw.mini.gk_1.app.App'
 }
 
 javafx {

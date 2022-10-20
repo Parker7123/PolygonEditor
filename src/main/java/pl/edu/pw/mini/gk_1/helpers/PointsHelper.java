@@ -33,4 +33,12 @@ public class PointsHelper {
         double y4_ii = y3 + (h * (p2.getY() - p1.getY())) / d;
         return new Point2D[]{new Point2D(x4_i, y4_i), new Point2D(x4_ii, y4_ii)};
     }
+
+    public static Point2D perpendicularVector(Point2D vector) {
+        return new Point2D(-vector.getY(), vector.getX());
+    }
+
+    public static boolean areVectorsPerpendicular(Point2D p1, Point2D p2) {
+        return p1.angle(p2) == 90;
+    }
 }

@@ -19,7 +19,7 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox onKeyReleased="#onKeyReleased" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.pw.mini.gk_1.MainViewController">
+<VBox onKeyReleased="#onKeyReleased" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.pw.mini.gk_1.app.MainViewController">
   <children>
     <MenuBar VBox.vgrow="NEVER" />
     <SplitPane dividerPositions="0.2506, 0.75" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
@@ -72,8 +72,9 @@
                   </RadioButton>
                   <ToggleButton fx:id="relationToggleButton" layoutX="39.0" layoutY="262.0" mnemonicParsing="false" prefWidth="144.0" text="Relacje" toggleGroup="$g1" />
                   <TextField fx:id="lengthTextField" layoutX="120.0" layoutY="301.0" prefHeight="26.0" prefWidth="60.0" />
-                  <RadioButton layoutX="43.0" layoutY="336.0" mnemonicParsing="false" text="Prostopadłość" toggleGroup="$g3" />
-                  <Button fx:id="addRelationButton" layoutX="42.0" layoutY="365.0" mnemonicParsing="false" text="Dodaj" />
+                  <RadioButton fx:id="perpendicularRadioButton" layoutX="43.0" layoutY="336.0" mnemonicParsing="false" text="Prostopadłość" toggleGroup="$g3" />
+                  <Button fx:id="addRelationButton" layoutX="42.0" layoutY="365.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Dodaj" />
+                  <Button fx:id="removeRelationButton" layoutX="118.0" layoutY="365.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Usuń" />
           </children>
         </AnchorPane>
       </items>
