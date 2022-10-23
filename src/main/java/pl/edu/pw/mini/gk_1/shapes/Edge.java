@@ -107,4 +107,11 @@ public class Edge implements Movable, Drawable {
     public void setPerpendicularRelation(PerpendicularRelation perpendicularRelation) {
         this.perpendicularRelation = perpendicularRelation;
     }
+
+    public void removePerpendicularRelation() {
+        if (perpendicularRelation != null) {
+            perpendicularRelation.getEdgeInRelation().setPerpendicularRelation(null);
+            perpendicularRelation = null;
+        }
+    }
 }

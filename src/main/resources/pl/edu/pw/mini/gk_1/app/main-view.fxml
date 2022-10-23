@@ -22,20 +22,8 @@
 <VBox onKeyReleased="#onKeyReleased" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="pl.edu.pw.mini.gk_1.app.MainViewController">
   <children>
     <MenuBar VBox.vgrow="NEVER" />
-    <SplitPane dividerPositions="0.2506, 0.75" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+    <SplitPane dividerPositions="0.7506" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
-        <AnchorPane>
-          <children>
-            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" minWidth="60.0" prefWidth="-1.0" style="&#10;" text="Master" textAlignment="CENTER" wrapText="false">
-              <font>
-                <Font size="18.0" fx:id="x1" />
-              </font>
-              <textFill>
-                <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
-              </textFill>
-            </Label>
-          </children>
-        </AnchorPane>
         <ScrollPane hbarPolicy="NEVER" prefHeight="-1.0" prefWidth="-1.0" vbarPolicy="NEVER">
           <content>
             <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0">
@@ -51,7 +39,13 @@
         </ScrollPane>
         <AnchorPane>
           <children>
-            <Label alignment="CENTER" font="$x1" layoutX="14.0" layoutY="14.0" style="&#10;" text="Details" textAlignment="CENTER" textFill="$x2" wrapText="false" />
+            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" style="&#10;" text="Details" textAlignment="CENTER" wrapText="false">
+                     <font>
+                <Font size="18.0" fx:id="x1" />
+                     </font>
+                     <textFill>
+                <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
+                     </textFill></Label>
                   <ToggleButton fx:id="drawingButton" layoutX="39.0" layoutY="66.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Rysowanie">
                      <toggleGroup>
                         <ToggleGroup fx:id="g1" />
@@ -75,6 +69,7 @@
                   <RadioButton fx:id="perpendicularRadioButton" layoutX="43.0" layoutY="336.0" mnemonicParsing="false" text="Prostopadłość" toggleGroup="$g3" />
                   <Button fx:id="addRelationButton" layoutX="42.0" layoutY="365.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Dodaj" />
                   <Button fx:id="removeRelationButton" layoutX="118.0" layoutY="365.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Usuń" />
+                  <Button fx:id="testSceneButton" layoutX="42.0" layoutY="410.0" mnemonicParsing="false" onAction="#generateTestScene" prefHeight="25.0" prefWidth="144.0" text="Scena testowa" />
           </children>
         </AnchorPane>
       </items>

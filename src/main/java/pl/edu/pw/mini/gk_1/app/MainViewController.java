@@ -12,8 +12,12 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
 import pl.edu.pw.mini.gk_1.managers.*;
+import pl.edu.pw.mini.gk_1.relations.LengthRelation;
+import pl.edu.pw.mini.gk_1.relations.PerpendicularRelation;
 import pl.edu.pw.mini.gk_1.relations.RelationMode;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
+import pl.edu.pw.mini.gk_1.shapes.Vertex;
+import pl.edu.pw.mini.gk_1.shapes.VerticesList;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -53,6 +57,7 @@ public class MainViewController implements Initializable {
     private AnimationManager animationManager;
     private ManipulationManager manipulationManager;
     private RelationManager relationManager;
+    private final List<Polygon> polygons = new ArrayList<>();
 
     @FXML
     void onCanvasMouseClicked(MouseEvent event) {
@@ -103,7 +108,6 @@ public class MainViewController implements Initializable {
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        List<Polygon> polygons = new ArrayList<>();
         drawingManager = new DrawingManager(canvas.getGraphicsContext2D(), polygons);
         deletingManager = new DeletingManager(canvas.getGraphicsContext2D(), polygons);
         animationManager = new AnimationManager(canvas.getGraphicsContext2D(), polygons);
@@ -141,6 +145,8 @@ public class MainViewController implements Initializable {
         removeRelationButton.setOnAction(event -> {
             if (lengthRadioButton.isSelected()) {
                 removeLengthRelation();
+            } else if (perpendicularRadioButton.isSelected()) {
+                removePerpendicularRelation();
             }
         });
         lengthTextField.setOnKeyPressed(event -> {
@@ -150,6 +156,42 @@ public class MainViewController implements Initializable {
                 }
             }
         });
+    }
+
+    @FXML
+    void generateTestScene() {
+        polygons.clear();
+
+        // rectangle
+        VerticesList vertices = new VerticesList();
+        vertices.add(new Vertex(200, 320));
+        vertices.add(new Vertex(400, 320));
+        vertices.add(new Vertex(400, 520));
+        vertices.add(new Vertex(200, 520));
+        Polygon polygon = new Polygon(vertices);
+        var edges = polygon.getEdges();
+        edges.get(0).setLengthRelation(new LengthRelation(200));
+        edges.get(0).setPerpendicularRelation(new PerpendicularRelation(edges.get(1)));
+        edges.get(1).setPerpendicularRelation(new PerpendicularRelation(edges.get(0)));
+        polygons.add(polygon);
+
+        // strange polygon
+        vertices = new VerticesList();
+        vertices.add(new Vertex(300, 100));
+        vertices.add(new Vertex(400, 200));
+        vertices.add(new Vertex(500, 300));
+        vertices.add(new Vertex(400, 250));
+        vertices.add(new Vertex(250, 250));
+        vertices.add(new Vertex(300, 200));
+        polygon = new Polygon(vertices);
+        edges = polygon.getEdges();
+        edges.get(5).setLengthRelation(new LengthRelation(100));
+        edges.get(2).setLengthRelation(new LengthRelation(100));
+        edges.get(0).setLengthRelation(new LengthRelation(141.42));
+        edges.get(3).setPerpendicularRelation(new PerpendicularRelation(edges.get(5)));
+        edges.get(5).setPerpendicularRelation(new PerpendicularRelation(edges.get(3)));
+        polygons.add(polygon);
+        redrawPolygons();
     }
 
     private void redrawPolygons() {
@@ -182,6 +224,12 @@ public class MainViewController implements Initializable {
 
     private void removeLengthRelation() {
         relationManager.removeLengthRelation();
+        redrawPolygons();
+        relationManager.highlightSelectedEdges();
+    }
+
+    private void removePerpendicularRelation() {
+        relationManager.removePerpendicularRelation();
         redrawPolygons();
         relationManager.highlightSelectedEdges();
     }

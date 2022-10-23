@@ -38,6 +38,16 @@ public class PointsHelper {
         return new Point2D(-vector.getY(), vector.getX());
     }
 
+    public static Point2D closestPerpendicularVector(Point2D vector, Point2D vectorClosestTo) {
+        var perpendicularVector1 = new Point2D(-vector.getY(), vector.getX());
+        var perpendicularVector2 = new Point2D(vector.getY(), -vector.getX());
+        if(perpendicularVector1.distance(vectorClosestTo) < perpendicularVector2.distance(vectorClosestTo)) {
+            return perpendicularVector1;
+        } else {
+            return perpendicularVector2;
+        }
+    }
+
     public static boolean areVectorsPerpendicular(Point2D p1, Point2D p2) {
         return p1.angle(p2) == 90;
     }
