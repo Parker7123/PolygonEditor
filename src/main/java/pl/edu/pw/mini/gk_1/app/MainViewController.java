@@ -16,6 +16,7 @@ import pl.edu.pw.mini.gk_1.relations.LengthRelation;
 import pl.edu.pw.mini.gk_1.relations.PerpendicularRelation;
 import pl.edu.pw.mini.gk_1.relations.RelationMode;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
+import pl.edu.pw.mini.gk_1.shapes.PolygonEdgePair;
 import pl.edu.pw.mini.gk_1.shapes.Vertex;
 import pl.edu.pw.mini.gk_1.shapes.VerticesList;
 
@@ -126,13 +127,8 @@ public class MainViewController implements Initializable {
                 relationManager.resetRelationMode();
             }
         });
-        lengthRadioButton.setOnAction(event -> {
-            relationManager.setRelationMode(RelationMode.LENGTH);
-        });
-        perpendicularRadioButton.setOnAction(event -> {
-
-            relationManager.setRelationMode(RelationMode.PERPENDICULAR);
-        });
+        lengthRadioButton.setOnAction(event -> relationManager.setRelationMode(RelationMode.LENGTH));
+        perpendicularRadioButton.setOnAction(event -> relationManager.setRelationMode(RelationMode.PERPENDICULAR));
 
         relationManager.setRelationMode(RelationMode.LENGTH);
         addRelationButton.setOnAction(event -> {
@@ -171,8 +167,8 @@ public class MainViewController implements Initializable {
         Polygon polygon = new Polygon(vertices);
         var edges = polygon.getEdges();
         edges.get(0).setLengthRelation(new LengthRelation(200));
-        edges.get(0).setPerpendicularRelation(new PerpendicularRelation(edges.get(1)));
-        edges.get(1).setPerpendicularRelation(new PerpendicularRelation(edges.get(0)));
+        edges.get(0).setPerpendicularRelation(new PerpendicularRelation(new PolygonEdgePair(polygon, edges.get(1))));
+        edges.get(1).setPerpendicularRelation(new PerpendicularRelation(new PolygonEdgePair(polygon, edges.get(0))));
         polygons.add(polygon);
 
         // strange polygon
@@ -188,8 +184,8 @@ public class MainViewController implements Initializable {
         edges.get(5).setLengthRelation(new LengthRelation(100));
         edges.get(2).setLengthRelation(new LengthRelation(100));
         edges.get(0).setLengthRelation(new LengthRelation(141.42));
-        edges.get(3).setPerpendicularRelation(new PerpendicularRelation(edges.get(5)));
-        edges.get(5).setPerpendicularRelation(new PerpendicularRelation(edges.get(3)));
+        edges.get(3).setPerpendicularRelation(new PerpendicularRelation(new PolygonEdgePair(polygon, edges.get(5))));
+        edges.get(5).setPerpendicularRelation(new PerpendicularRelation(new PolygonEdgePair(polygon, edges.get(3))));
         polygons.add(polygon);
         redrawPolygons();
     }

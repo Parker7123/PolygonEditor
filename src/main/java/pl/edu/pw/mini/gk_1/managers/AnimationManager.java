@@ -27,8 +27,6 @@ public class AnimationManager extends AbstractManager {
             return;
         }
         var polygonEdgePair = firstEdgeCloseEnough(point);
-        if (polygonEdgePair.isPresent()) {
-            Polygon.highlightEdge(graphicsContext, polygonEdgePair.get().getEdge(), drawingMode);
-        }
+        polygonEdgePair.ifPresent(pair -> Polygon.highlightEdge(graphicsContext, pair.getEdge(), drawingMode));
     }
 }

@@ -53,9 +53,7 @@ public class DrawingManager extends AbstractManager {
         clearCanvas();
         if(partialPolygonManager.isPolygonBeingDrawn()) {
             var newPolygon = partialPolygonManager.continueDrawingPolygon(point);
-            newPolygon.ifPresent(polygon -> {
-                polygons.add(polygon);
-            });
+            newPolygon.ifPresent(polygons::add);
         } else {
             partialPolygonManager.startDrawing(point);
         }

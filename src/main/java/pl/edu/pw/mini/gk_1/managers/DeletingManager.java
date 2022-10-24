@@ -6,7 +6,6 @@ import javafx.scene.input.MouseEvent;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
 import pl.edu.pw.mini.gk_1.shapes.Vertex;
 
-import java.nio.file.OpenOption;
 import java.util.List;
 import java.util.Optional;
 

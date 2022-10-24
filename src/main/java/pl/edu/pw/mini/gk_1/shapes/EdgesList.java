@@ -1,7 +1,6 @@
 package pl.edu.pw.mini.gk_1.shapes;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -28,7 +27,7 @@ public class EdgesList extends ArrayList<Edge> {
         edges.forEach(edge -> vertexEdgeMap.get(edge.getVertex1())[1] = edge);
     }
 
-    public Edge removeAndRepair(Vertex v) {
+    public void removeAndRepair(Vertex v) {
         Edge[] matchedEdges = edgesForStartingVertex(v);
         var prevVertex = matchedEdges[0].getVertex1();
         var nextVertex = matchedEdges[1].getVertex2();
@@ -38,7 +37,6 @@ public class EdgesList extends ArrayList<Edge> {
         var index = indexOf(matchedEdges[0]);
         add(index, createdEdge);
         super.removeAll(List.of(matchedEdges));
-        return createdEdge;
     }
 
     public void addVertex(Vertex prevVertex, Vertex vertex) {
@@ -56,10 +54,5 @@ public class EdgesList extends ArrayList<Edge> {
     }
     public Edge[] edgesForStartingVertex(Vertex vertex) {
         return vertexEdgeMap.get(vertex);
-    }
-
-    public void applyLengthRelations(Vertex vertex) {
-        this.stream().takeWhile(edge -> !edge.getVertex1().equals(vertex));
-
     }
 }

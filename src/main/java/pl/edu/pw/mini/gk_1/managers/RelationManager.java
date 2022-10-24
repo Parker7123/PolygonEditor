@@ -1,31 +1,27 @@
 package pl.edu.pw.mini.gk_1.managers;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.StringProperty;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.effect.Light;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.transform.Affine;
 import pl.edu.pw.mini.gk_1.helpers.PointsHelper;
 import pl.edu.pw.mini.gk_1.relations.LengthRelation;
 import pl.edu.pw.mini.gk_1.relations.PerpendicularRelation;
 import pl.edu.pw.mini.gk_1.relations.RelationMode;
-import pl.edu.pw.mini.gk_1.relations.RelationsContainer;
 import pl.edu.pw.mini.gk_1.shapes.*;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class RelationManager extends AbstractManager {
     private final StringProperty lengthProperty;
     private RelationMode relationMode = RelationMode.LENGTH;
-    private Optional<PolygonEdgePair> polygonEdgePair = Optional.empty();
-    private PolygonTwoEdgesPair polygonTwoEdgesPair = PolygonTwoEdgesPair.empty();
+    private PolygonEdgePair polygonEdgePair1 = null;
+    private PolygonEdgePair polygonEdgePair2 = null;
 
     public RelationManager(GraphicsContext graphicsContext, List<Polygon> polygons, StringProperty lengthProperty) {
         super(graphicsContext, polygons);
@@ -38,7 +34,7 @@ public class RelationManager extends AbstractManager {
         Optional<PolygonEdgePair> polygonWithCloseEdge = firstEdgeCloseEnough(point);
         switch (relationMode) {
             case LENGTH:
-                polygonEdgePair = polygonWithCloseEdge;
+                polygonWithCloseEdge.ifPresent(pair -> polygonEdgePair1 = pair);
                 highlightSelectedEdges();
                 updateLengthProperty();
                 break;
@@ -50,17 +46,14 @@ public class RelationManager extends AbstractManager {
     }
 
     private void updatePolygonTwoEdgesPair(PolygonEdgePair polygonEdgePair) {
-        Edge selectedEdge = polygonEdgePair.getEdge();
-        if (!polygonTwoEdgesPair.getPolygon().equals(polygonEdgePair.getPolygon())) {
-            polygonTwoEdgesPair = new PolygonTwoEdgesPair(polygonEdgePair.getPolygon());
-        }
-        if (polygonTwoEdgesPair.getEdge1() == null) {
-            polygonTwoEdgesPair.setEdge1(selectedEdge);
-        } else if (polygonTwoEdgesPair.getEdge2() == null && !polygonTwoEdgesPair.getEdge1().equals(selectedEdge)) {
-            polygonTwoEdgesPair.setEdge2(selectedEdge);
-        } else if (!polygonTwoEdgesPair.getEdge2().equals(selectedEdge)) {
-            polygonTwoEdgesPair.setEdge1(polygonTwoEdgesPair.getEdge2());
-            polygonTwoEdgesPair.setEdge2(selectedEdge);
+        if (polygonEdgePair1 == null) {
+            polygonEdgePair1 = polygonEdgePair;
+        } else if (polygonEdgePair2 == null) {
+            polygonEdgePair2 = polygonEdgePair;
+        } else if (!polygonEdgePair1.getEdge().equals(polygonEdgePair.getEdge()) &&
+                !polygonEdgePair2.getEdge().equals(polygonEdgePair.getEdge())) {
+            polygonEdgePair1 = polygonEdgePair2;
+            polygonEdgePair2 = polygonEdgePair;
         }
     }
 
@@ -84,9 +77,12 @@ public class RelationManager extends AbstractManager {
         }
     }
 
-    private void applyPerpendicularRelation(Edge edge, boolean backwards) {
+    private void applyPerpendicularRelation(PolygonEdgePair polygonEdgePair, boolean backwards) {
+        Edge edge = polygonEdgePair.getEdge();
+        Polygon polygon = polygonEdgePair.getPolygon();
         PerpendicularRelation relation = edge.getPerpendicularRelation().orElseThrow();
         Edge edgeInRelation = relation.getEdgeInRelation();
+        Polygon polygonInRelation = relation.getPolygonInRelation();
         Point2D point1 = edge.getVertex1().getPoint();
         Point2D point2 = edge.getVertex2().getPoint();
         Point2D otherPoint1 = edgeInRelation.getVertex1().getPoint();
@@ -96,22 +92,25 @@ public class RelationManager extends AbstractManager {
 
         if (point2.equals(otherPoint1)) {
             Point2D perpendicularVector = PointsHelper.closestPerpendicularVector(mainVector, otherVector);
-            edgeInRelation.getVertex2().setPoint(perpendicularVector.multiply(otherVector.magnitude()/mainVector.magnitude()).add(otherPoint1));
+            edgeInRelation.getVertex2().setPoint(perpendicularVector.multiply(otherVector.magnitude() / mainVector.magnitude()).add(otherPoint1));
         } else if (point1.equals(otherPoint2)) {
-            if(backwards) {
+            if (backwards) {
                 Point2D perpendicularVector = PointsHelper.closestPerpendicularVector(mainVector, otherVector.multiply(-1));
-                edgeInRelation.getVertex1().setPoint(perpendicularVector.multiply(otherVector.magnitude()/mainVector.magnitude()).add(point1));
+                edgeInRelation.getVertex1().setPoint(perpendicularVector.multiply(otherVector.magnitude() / mainVector.magnitude()).add(point1));
             } else {
                 Point2D perpendicularVector = PointsHelper.closestPerpendicularVector(otherVector, mainVector);
-                edge.getVertex2().setPoint(perpendicularVector.multiply(mainVector.magnitude()/otherVector.magnitude()).add(otherPoint2));
+                edge.getVertex2().setPoint(perpendicularVector.multiply(mainVector.magnitude() / otherVector.magnitude()).add(otherPoint2));
             }
         } else {
             if (backwards) {
                 Point2D perpendicularVector = PointsHelper.closestPerpendicularVector(otherVector.multiply(-1), mainVector.multiply(-1));
-                edge.getVertex1().setPoint(perpendicularVector.multiply(mainVector.magnitude()/otherVector.magnitude()).add(point2));
+                edge.getVertex1().setPoint(perpendicularVector.multiply(mainVector.magnitude() / otherVector.magnitude()).add(point2));
             } else {
                 Point2D perpendicularVector = PointsHelper.closestPerpendicularVector(otherVector, mainVector);
-                edge.getVertex2().setPoint(perpendicularVector.multiply(mainVector.magnitude()/otherVector.magnitude()).add(point1));
+                edge.getVertex2().setPoint(perpendicularVector.multiply(mainVector.magnitude() / otherVector.magnitude()).add(point1));
+            }
+            if (polygon.getId() != polygonInRelation.getId() && relation.getTested().compareAndSet(false, true)) {
+                applyPerpendicularRelation(new PolygonEdgePair(polygonInRelation, edgeInRelation), false);
             }
         }
     }
@@ -122,25 +121,21 @@ public class RelationManager extends AbstractManager {
     }
 
     public void addLengthRelation() {
-        polygonEdgePair.ifPresent(pair -> {
-            Polygon polygon = pair.getPolygon();
-            Edge edge = pair.getEdge();
-            edge.getLengthRelation().ifPresentOrElse(relation -> {
-                relation.setLength(getRequiredLength());
-            }, () -> {
-                edge.setLengthRelation(new LengthRelation(getRequiredLength()));
-            });
+        if (polygonEdgePair1 != null) {
+            Polygon polygon = polygonEdgePair1.getPolygon();
+            Edge edge = polygonEdgePair1.getEdge();
+            edge.getLengthRelation().ifPresentOrElse(relation -> relation.setLength(getRequiredLength()), () -> edge.setLengthRelation(new LengthRelation(getRequiredLength())));
             applyRelationsStartingAtVertex(new PolygonVertexPair(polygon, edge.getVertex1()));
-        });
+        }
     }
 
     public void addPerpendicularRelation() {
-        if (polygonTwoEdgesPair.getEdge1() == null || polygonTwoEdgesPair.getEdge2() == null) {
+        if (polygonEdgePair1.getEdge() == null || polygonEdgePair2.getEdge() == null) {
             return;
         }
-        polygonTwoEdgesPair.getEdge1().setPerpendicularRelation(new PerpendicularRelation(polygonTwoEdgesPair.getEdge2()));
-        polygonTwoEdgesPair.getEdge2().setPerpendicularRelation(new PerpendicularRelation(polygonTwoEdgesPair.getEdge1()));
-        applyRelationsStartingAtVertex(new PolygonVertexPair(polygonTwoEdgesPair.getPolygon(), polygonTwoEdgesPair.getEdge1().getVertex1()));
+        polygonEdgePair1.getEdge().setPerpendicularRelation(new PerpendicularRelation(polygonEdgePair2));
+        polygonEdgePair2.getEdge().setPerpendicularRelation(new PerpendicularRelation(polygonEdgePair1));
+        applyRelationsStartingAtVertex(new PolygonVertexPair(polygonEdgePair1.getPolygon(), polygonEdgePair1.getEdge().getVertex1()));
 //        applyRelationsStartingAtVertex(new PolygonVertexPair(polygonTwoEdgesPair.getPolygon(), polygonTwoEdgesPair.getEdge2().getVertex1()));
     }
 
@@ -153,9 +148,7 @@ public class RelationManager extends AbstractManager {
                         polygon.getEdges().stream().takeWhile(edge -> !edge.getVertex1().equals(vertex)))
                 .takeWhile(edge -> edge.getLengthRelation().isPresent() || edge.getPerpendicularRelation().isPresent())
                 .forEach(edge -> {
-                    edge.getPerpendicularRelation().ifPresent(perpendicularRelation -> {
-                        applyPerpendicularRelation(edge, false);
-                    });
+                    edge.getPerpendicularRelation().ifPresent(perpendicularRelation -> applyPerpendicularRelation(new PolygonEdgePair(polygon, edge), false));
                     edge.getLengthRelation().ifPresent(lengthRelation -> applyLengthRelation(edge, false));
                 });
 
@@ -170,39 +163,43 @@ public class RelationManager extends AbstractManager {
                 )
                 .takeWhile(edge -> edge.getLengthRelation().isPresent() || edge.getPerpendicularRelation().isPresent())
                 .forEach(edge -> {
-                    edge.getPerpendicularRelation().ifPresent(perpendicularRelation -> {
-                        applyPerpendicularRelation(edge, true);
-                    });
-                    edge.getLengthRelation().ifPresent(lengthRelation -> applyLengthRelation(edge, true));
+                    edge.getPerpendicularRelation().ifPresent(perpendicularRelation -> applyPerpendicularRelation(new PolygonEdgePair(polygon, edge), true));
+                    edge.getLengthRelation().ifPresent(lengthRelation ->
+                            applyLengthRelation(edge, true));
                 });
     }
 
     private void updateLengthProperty() {
-        polygonEdgePair.ifPresentOrElse(pair -> {
-            pair.getPolygon().getRelationsContainer().getLengthRelationForEdge(pair.getEdge()).ifPresentOrElse(relation -> {
-                lengthProperty.set(String.valueOf(relation.getLength()));
-            }, () -> lengthProperty.set(
-                    BigDecimal.valueOf(pair.getEdge().length()).setScale(2, RoundingMode.HALF_UP).toPlainString()));
-        }, () -> lengthProperty.set(""));
+        if (polygonEdgePair1 != null) {
+            var roundedLength = BigDecimal.valueOf(polygonEdgePair1.getEdge().length())
+                    .setScale(2, RoundingMode.HALF_UP);
+            var propertyValue = String.valueOf(roundedLength);
+            lengthProperty.set(propertyValue);
+
+        } else {
+            lengthProperty.set("");
+        }
     }
 
     public void resetRelationMode() {
-        polygonEdgePair = Optional.empty();
-        polygonTwoEdgesPair = PolygonTwoEdgesPair.empty();
+        polygonEdgePair1 = null;
+        polygonEdgePair2 = null;
         updateLengthProperty();
     }
 
     public void highlightSelectedEdges() {
         switch (relationMode) {
             case LENGTH:
-                polygonEdgePair.ifPresent(pair -> Polygon.highlightEdge(graphicsContext, pair.getEdge(), drawingMode));
+                if (polygonEdgePair1 != null) {
+                    Polygon.highlightEdge(graphicsContext, polygonEdgePair1.getEdge(), drawingMode);
+                }
                 break;
             case PERPENDICULAR:
-                if (polygonTwoEdgesPair.getEdge1() != null) {
-                    Polygon.highlightEdge(graphicsContext, polygonTwoEdgesPair.getEdge1(), drawingMode);
+                if (polygonEdgePair1 != null) {
+                    Polygon.highlightEdge(graphicsContext, polygonEdgePair1.getEdge(), drawingMode);
                 }
-                if (polygonTwoEdgesPair.getEdge2() != null) {
-                    Polygon.highlightEdge(graphicsContext, polygonTwoEdgesPair.getEdge2(), drawingMode);
+                if (polygonEdgePair2 != null) {
+                    Polygon.highlightEdge(graphicsContext, polygonEdgePair2.getEdge(), drawingMode);
                 }
                 break;
         }
@@ -217,12 +214,17 @@ public class RelationManager extends AbstractManager {
     }
 
     public void removePerpendicularRelation() {
-        if(polygonTwoEdgesPair.getEdge1() != null) {
-            polygonTwoEdgesPair.getEdge1().removePerpendicularRelation();
+        if (polygonEdgePair1.getEdge() != null) {
+            polygonEdgePair1.getEdge().removePerpendicularRelation();
+        }
+        if (polygonEdgePair2.getEdge() != null) {
+            polygonEdgePair2.getEdge().removePerpendicularRelation();
         }
     }
 
     public void removeLengthRelation() {
-        polygonEdgePair.ifPresent(pair -> pair.getEdge().removeLengthRelation());
+        if (polygonEdgePair1 != null) {
+            polygonEdgePair1.getEdge().removeLengthRelation();
+        }
     }
 }

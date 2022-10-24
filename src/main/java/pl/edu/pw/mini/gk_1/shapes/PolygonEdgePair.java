@@ -16,4 +16,5 @@ public class PolygonEdgePair {
     public Edge getEdge() {
         return edge;
     }
+
 }

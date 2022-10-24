@@ -8,7 +8,6 @@ import pl.edu.pw.mini.gk_1.shapes.PartialPolygon;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
 import pl.edu.pw.mini.gk_1.shapes.Vertex;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -57,14 +56,6 @@ public class PartialPolygonManager {
             return Optional.of(new Polygon(partialPolygon.getVertices()));
         }
         return Optional.empty();
-    }
-
-    public List<Vertex> endDrawing() {
-        if(!isPolygonBeingDrawn()) {
-            throw new IllegalStateException();
-        }
-        polygonBeingDrawn.set(false);
-        return partialPolygon.getVertices();
     }
 
     public void drawPartialPolygonWithLine(Point2D point) {

@@ -49,7 +49,6 @@ public class ManipulationManager extends AbstractManager {
         if(polygonEdgePair == null) {
             return;
         }
-        var polygon = polygonEdgePair.getPolygon();
         var vector = point.subtract(prevDragPoint);
         var edge = polygonEdgePair.getEdge();
         edge.getVertex1().move(vector);

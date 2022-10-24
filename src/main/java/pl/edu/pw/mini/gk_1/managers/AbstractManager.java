@@ -9,10 +9,7 @@ import pl.edu.pw.mini.gk_1.shapes.*;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 public abstract class AbstractManager {
     protected final GraphicsContext graphicsContext;
@@ -36,25 +33,12 @@ public abstract class AbstractManager {
 
     public abstract void onMouseMoved(MouseEvent event);
 
-    public void forEachVertexInPolygons(BiConsumer<Polygon, Vertex> consumer) {
-        polygons.stream().flatMap(
-                polygon -> polygon.getVertices().stream().map(
-                        vertex -> new PolygonVertexPair(polygon, vertex)
-                )
-        ).forEach(pair -> consumer.accept(pair.getPolygon(), pair.getVertex()));
-    }
-
     public Optional<PolygonVertexPair> firstMatchedVertexInPolygons(Predicate<Vertex> predicate) {
         return polygons.stream().flatMap(
                 polygon -> polygon.getVertices().stream().map(
                         vertex -> new PolygonVertexPair(polygon, vertex)
                 )
         ).filter(pair -> predicate.test(pair.getVertex())).findFirst();
-    }
-
-    public void onFirstMatchedVertexInPolygons(Predicate<Vertex> predicate, BiConsumer<Polygon, Vertex> consumer) {
-        var polygonVertexPair = firstMatchedVertexInPolygons(predicate);
-        polygonVertexPair.ifPresent(pair -> consumer.accept(pair.getPolygon(), pair.getVertex()));
     }
 
     public Optional<PolygonVertexPair> firstVertexCloseEnough(Point2D point) {

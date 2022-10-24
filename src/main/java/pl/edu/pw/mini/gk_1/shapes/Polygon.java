@@ -3,22 +3,16 @@ package pl.edu.pw.mini.gk_1.shapes;
 import javafx.geometry.Point2D;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.canvas.GraphicsContext;
-import pl.edu.pw.mini.gk_1.helpers.DrawingHelper;
 import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
 import pl.edu.pw.mini.gk_1.interfaces.Movable;
-import pl.edu.pw.mini.gk_1.relations.Relation;
-import pl.edu.pw.mini.gk_1.relations.RelationsContainer;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Random;
 
-public class Polygon extends AbstractPolygon implements Movable, Cloneable {
+public class Polygon extends AbstractPolygon implements Movable {
 
-    //    private final List<Relation> relations = new ArrayList<>();
     private final EdgesList edges;
-    private final RelationsContainer relationsContainer = new RelationsContainer();
+    private final int id = new Random().nextInt();
 
     public Polygon(VerticesList vertices) {
         this.vertices.addAll(vertices);
@@ -32,15 +26,7 @@ public class Polygon extends AbstractPolygon implements Movable, Cloneable {
 
     public void deleteVertex(Vertex vertex) {
         vertices.remove(vertex);
-        int vIndex = vertices.indexOf(vertex);
         edges.removeAndRepair(vertex);
-
-        if(vIndex > 0) {
-            relationsContainer.removeLengthRelationFromEdge(new Edge(vertices.get(vIndex - 1), vertex));
-        } else {
-            relationsContainer.removeLengthRelationFromEdge(new Edge(vertex, vertices.getLast()));
-        }
-        relationsContainer.removeLengthRelationFromEdge(new Edge(vertices.get((vIndex + 1) & vertices.size()), vertex));
     }
 
     public boolean isPointInside(Point2D point) {
@@ -66,11 +52,11 @@ public class Polygon extends AbstractPolygon implements Movable, Cloneable {
         vertices.forEach(vertex -> vertex.move(vector));
     }
 
-    public RelationsContainer getRelationsContainer() {
-        return relationsContainer;
-    }
-
     public EdgesList getEdges() {
         return edges;
+    }
+
+    public int getId() {
+        return id;
     }
 }
