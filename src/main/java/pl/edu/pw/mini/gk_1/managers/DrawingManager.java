@@ -7,6 +7,8 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
+import pl.edu.pw.mini.gk_1.helpers.ShapeMode;
+import pl.edu.pw.mini.gk_1.shapes.Oval;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
 
 import java.util.List;
@@ -52,22 +54,35 @@ public class DrawingManager extends AbstractManager {
         var point = mouseEventToPoint2D(event);
         clearCanvas();
         if(partialPolygonManager.isPolygonBeingDrawn()) {
-            var newPolygon = partialPolygonManager.continueDrawingPolygon(point);
-            newPolygon.ifPresent(polygons::add);
+            if (getShapeMode() == ShapeMode.POLYGON) {
+                var newPolygon = partialPolygonManager.continueDrawingPolygon(point);
+                newPolygon.ifPresent(polygons::add);
+            } else {
+                var newOval = partialPolygonManager.continueDrawingOval(point);
+                newOval.ifPresent(ovals::add);
+            }
         } else {
-            partialPolygonManager.startDrawing(point);
+            if (getShapeMode() == ShapeMode.POLYGON) {
+                partialPolygonManager.startDrawingPolygon(point);
+            } else {
+                partialPolygonManager.startDrawingOval(point);
+            }
         }
         drawPolygonsWithPartialLine(point);
     }
 
-    public DrawingManager(GraphicsContext graphicsContext, List<Polygon> polygons) {
-        super(graphicsContext, polygons);
+    public DrawingManager(GraphicsContext graphicsContext, List<Polygon> polygons, List<Oval> ovals) {
+        super(graphicsContext, polygons, ovals);
         this.partialPolygonManager = new PartialPolygonManager(graphicsContext);
     }
 
     public void drawPolygonsWithPartialLine(Point2D point) {
         drawPolygons();
-        partialPolygonManager.drawPartialPolygonWithLine(point);
+        if (getShapeMode() == ShapeMode.POLYGON) {
+            partialPolygonManager.drawPartialPolygonWithLine(point);
+        } else {
+            partialPolygonManager.drawOval(point);
+        }
     }
 
     public void clearCanvas() {

@@ -28,7 +28,7 @@
           <content>
             <AnchorPane id="Content" minHeight="-1.0" minWidth="-1.0">
               <children>
-                        <Canvas fx:id="canvas" height="1500.0" layoutX="500.0" onMouseClicked="#onCanvasMouseClicked" onMouseDragged="#onMouseDragged" onMouseMoved="#onCanvasMouseMoved" onMousePressed="#onMousePressed" width="1500.0" AnchorPane.bottomAnchor="-4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="57.0" AnchorPane.topAnchor="0.0">
+                        <Canvas fx:id="canvas" height="1500.0" onMouseClicked="#onCanvasMouseClicked" onMouseDragged="#onMouseDragged" onMouseMoved="#onCanvasMouseMoved" onMousePressed="#onMousePressed" width="1500.0" AnchorPane.bottomAnchor="-4.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="57.59999999999991" AnchorPane.topAnchor="0.0">
                            <cursor>
                               <Cursor fx:constant="HAND" />
                            </cursor>
@@ -39,37 +39,43 @@
         </ScrollPane>
         <AnchorPane>
           <children>
-            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" style="&#10;" text="Details" textAlignment="CENTER" wrapText="false">
+            <Label alignment="CENTER" layoutX="14.0" layoutY="14.0" style="&#10;" text="Ustawienia" textAlignment="CENTER" wrapText="false">
                      <font>
                 <Font size="18.0" fx:id="x1" />
                      </font>
                      <textFill>
                 <Color red="0.624" green="0.624" blue="0.624" fx:id="x2" />
                      </textFill></Label>
-                  <ToggleButton fx:id="drawingButton" layoutX="39.0" layoutY="66.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Rysowanie">
+                  <ToggleButton fx:id="drawingButton" layoutX="37.0" layoutY="98.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Rysowanie">
                      <toggleGroup>
                         <ToggleGroup fx:id="g1" />
                      </toggleGroup>
                   </ToggleButton>
-                  <ToggleButton fx:id="manipiulatingButton" layoutX="39.0" layoutY="221.0" mnemonicParsing="false" prefWidth="144.0" text="Manipulowanie" toggleGroup="$g1" />
-                  <ToggleButton fx:id="deletingButton" layoutX="39.0" layoutY="181.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Usuwanie / Dodawanie" toggleGroup="$g1" />
-                  <RadioButton fx:id="normalDrawingRadioButton" layoutX="39.0" layoutY="109.0" mnemonicParsing="false" selected="true" text="Normalne">
+                  <ToggleButton fx:id="manipiulatingButton" layoutX="39.0" layoutY="243.0" mnemonicParsing="false" prefWidth="144.0" text="Manipulowanie" toggleGroup="$g1" />
+                  <ToggleButton fx:id="deletingButton" layoutX="39.0" layoutY="203.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="144.0" text="Usuwanie / Dodawanie" toggleGroup="$g1" />
+                  <RadioButton fx:id="normalDrawingRadioButton" layoutX="39.0" layoutY="131.0" mnemonicParsing="false" selected="true" text="Normalne">
                      <toggleGroup>
                         <ToggleGroup fx:id="g2" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="bresenhamDrawingRadioButton" layoutX="39.0" layoutY="138.0" mnemonicParsing="false" text="Bresenham" toggleGroup="$g2" />
-                  <RadioButton fx:id="lengthRadioButton" layoutX="43.0" layoutY="306.0" mnemonicParsing="false" selected="true" text="Długość">
+                  <RadioButton fx:id="bresenhamDrawingRadioButton" layoutX="39.0" layoutY="160.0" mnemonicParsing="false" text="Bresenham" toggleGroup="$g2" />
+                  <RadioButton fx:id="lengthRadioButton" layoutX="43.0" layoutY="328.0" mnemonicParsing="false" selected="true" text="Długość">
                      <toggleGroup>
                         <ToggleGroup fx:id="g3" />
                      </toggleGroup>
                   </RadioButton>
-                  <ToggleButton fx:id="relationToggleButton" layoutX="39.0" layoutY="262.0" mnemonicParsing="false" prefWidth="144.0" text="Relacje" toggleGroup="$g1" />
-                  <TextField fx:id="lengthTextField" layoutX="120.0" layoutY="301.0" prefHeight="26.0" prefWidth="60.0" />
-                  <RadioButton fx:id="perpendicularRadioButton" layoutX="43.0" layoutY="336.0" mnemonicParsing="false" text="Prostopadłość" toggleGroup="$g3" />
-                  <Button fx:id="addRelationButton" layoutX="42.0" layoutY="365.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Dodaj" />
-                  <Button fx:id="removeRelationButton" layoutX="118.0" layoutY="365.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Usuń" />
-                  <Button fx:id="testSceneButton" layoutX="42.0" layoutY="410.0" mnemonicParsing="false" onAction="#generateTestScene" prefHeight="25.0" prefWidth="144.0" text="Scena testowa" />
+                  <ToggleButton fx:id="relationToggleButton" layoutX="39.0" layoutY="284.0" mnemonicParsing="false" prefWidth="144.0" text="Relacje" toggleGroup="$g1" />
+                  <TextField fx:id="lengthTextField" layoutX="120.0" layoutY="323.0" prefHeight="26.0" prefWidth="60.0" />
+                  <RadioButton fx:id="perpendicularRadioButton" layoutX="43.0" layoutY="358.0" mnemonicParsing="false" text="Prostopadłość" toggleGroup="$g3" />
+                  <Button fx:id="addRelationButton" layoutX="42.0" layoutY="387.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Dodaj" />
+                  <Button fx:id="removeRelationButton" layoutX="118.0" layoutY="387.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="66.0" text="Usuń" />
+                  <Button fx:id="testSceneButton" layoutX="42.0" layoutY="432.0" mnemonicParsing="false" onAction="#generateTestScene" prefHeight="25.0" prefWidth="144.0" text="Scena testowa" />
+                  <RadioButton fx:id="polygonRadioButton" layoutX="103.0" layoutY="65.0" mnemonicParsing="false" selected="true" text="Wielokąty">
+                     <toggleGroup>
+                        <ToggleGroup fx:id="g4" />
+                     </toggleGroup>
+                  </RadioButton>
+                  <RadioButton fx:id="circleRadioButton" layoutX="36.0" layoutY="65.0" mnemonicParsing="false" text="Okręgi" toggleGroup="$g4" />
           </children>
         </AnchorPane>
       </items>

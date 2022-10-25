@@ -23,8 +23,8 @@ public class RelationManager extends AbstractManager {
     private PolygonEdgePair polygonEdgePair1 = null;
     private PolygonEdgePair polygonEdgePair2 = null;
 
-    public RelationManager(GraphicsContext graphicsContext, List<Polygon> polygons, StringProperty lengthProperty) {
-        super(graphicsContext, polygons);
+    public RelationManager(GraphicsContext graphicsContext, List<Polygon> polygons, StringProperty lengthProperty, List<Oval> ovals) {
+        super(graphicsContext, polygons, ovals);
         this.lengthProperty = lengthProperty;
     }
 

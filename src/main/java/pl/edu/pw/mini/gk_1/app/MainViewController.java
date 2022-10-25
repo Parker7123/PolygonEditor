@@ -2,6 +2,7 @@ package pl.edu.pw.mini.gk_1.app;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Point2D;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Button;
 import javafx.scene.control.RadioButton;
@@ -11,14 +12,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import pl.edu.pw.mini.gk_1.helpers.DrawingMode;
+import pl.edu.pw.mini.gk_1.helpers.ShapeMode;
 import pl.edu.pw.mini.gk_1.managers.*;
 import pl.edu.pw.mini.gk_1.relations.LengthRelation;
 import pl.edu.pw.mini.gk_1.relations.PerpendicularRelation;
 import pl.edu.pw.mini.gk_1.relations.RelationMode;
-import pl.edu.pw.mini.gk_1.shapes.Polygon;
-import pl.edu.pw.mini.gk_1.shapes.PolygonEdgePair;
-import pl.edu.pw.mini.gk_1.shapes.Vertex;
-import pl.edu.pw.mini.gk_1.shapes.VerticesList;
+import pl.edu.pw.mini.gk_1.shapes.*;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -52,6 +51,10 @@ public class MainViewController implements Initializable {
     @FXML
     private Button addRelationButton;
     @FXML
+    private RadioButton polygonRadioButton;
+    @FXML
+    private RadioButton circleRadioButton;
+    @FXML
     private Button removeRelationButton;
     private DrawingManager drawingManager;
     private DeletingManager deletingManager;
@@ -59,6 +62,7 @@ public class MainViewController implements Initializable {
     private ManipulationManager manipulationManager;
     private RelationManager relationManager;
     private final List<Polygon> polygons = new ArrayList<>();
+    private final List<Oval>ovals = new ArrayList<>();
 
     @FXML
     void onCanvasMouseClicked(MouseEvent event) {
@@ -109,11 +113,11 @@ public class MainViewController implements Initializable {
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        drawingManager = new DrawingManager(canvas.getGraphicsContext2D(), polygons);
-        deletingManager = new DeletingManager(canvas.getGraphicsContext2D(), polygons);
-        animationManager = new AnimationManager(canvas.getGraphicsContext2D(), polygons);
-        relationManager = new RelationManager(canvas.getGraphicsContext2D(), polygons, lengthTextField.textProperty());
-        manipulationManager = new ManipulationManager(canvas.getGraphicsContext2D(), polygons, relationManager);
+        drawingManager = new DrawingManager(canvas.getGraphicsContext2D(), polygons, ovals);
+        deletingManager = new DeletingManager(canvas.getGraphicsContext2D(), polygons, ovals);
+        animationManager = new AnimationManager(canvas.getGraphicsContext2D(), polygons, ovals);
+        relationManager = new RelationManager(canvas.getGraphicsContext2D(), polygons, lengthTextField.textProperty(), ovals);
+        manipulationManager = new ManipulationManager(canvas.getGraphicsContext2D(), polygons, relationManager, ovals);
         normalDrawingRadioButton.setOnAction(event -> setDrawingMode(DrawingMode.NORMAL));
         bresenhamDrawingRadioButton.setOnAction(event -> setDrawingMode(DrawingMode.BRESENHAM));
         lengthTextField.disableProperty().bind(lengthRadioButton.selectedProperty().not()
@@ -152,6 +156,12 @@ public class MainViewController implements Initializable {
                 }
             }
         });
+        polygonRadioButton.setOnAction(event -> {
+            drawingManager.setShapeMode(ShapeMode.POLYGON);
+        });
+        circleRadioButton.setOnAction(event -> {
+            drawingManager.setShapeMode(ShapeMode.OVAL);
+        });
     }
 
     @FXML
@@ -187,6 +197,7 @@ public class MainViewController implements Initializable {
         edges.get(3).setPerpendicularRelation(new PerpendicularRelation(new PolygonEdgePair(polygon, edges.get(5))));
         edges.get(5).setPerpendicularRelation(new PerpendicularRelation(new PolygonEdgePair(polygon, edges.get(3))));
         polygons.add(polygon);
+        ovals.add(new Oval(new Point2D(130, 130), 80));
         redrawPolygons();
     }
 

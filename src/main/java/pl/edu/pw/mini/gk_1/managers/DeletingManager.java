@@ -3,6 +3,7 @@ package pl.edu.pw.mini.gk_1.managers;
 import javafx.geometry.Point2D;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.MouseEvent;
+import pl.edu.pw.mini.gk_1.shapes.Oval;
 import pl.edu.pw.mini.gk_1.shapes.Polygon;
 import pl.edu.pw.mini.gk_1.shapes.Vertex;
 
@@ -13,8 +14,8 @@ import static pl.edu.pw.mini.gk_1.helpers.PointsHelper.mouseEventToPoint2D;
 
 public class DeletingManager extends AbstractManager {
 
-    public DeletingManager(GraphicsContext graphicsContext, List<Polygon> polygons) {
-        super(graphicsContext, polygons);
+    public DeletingManager(GraphicsContext graphicsContext, List<Polygon> polygons, List<Oval> ovals) {
+        super(graphicsContext, polygons, ovals);
     }
 
     @Override
@@ -24,7 +25,12 @@ public class DeletingManager extends AbstractManager {
         if(deletedVertex.isPresent()) {
             return;
         }
+        var deletedOval = deleteNearestOval(point);
+        if (deletedOval.isPresent()) {
+            return;
+        }
         addVertexOnEdge(point);
+
     }
 
     @Override
@@ -46,6 +52,12 @@ public class DeletingManager extends AbstractManager {
             return Optional.of(vertex);
         }
         return Optional.empty();
+    }
+
+    private Optional<Oval> deleteNearestOval(Point2D point) {
+        var oval = firstOvalCloseEnoughRadius(point);
+        oval.ifPresent(ovals::remove);
+        return oval;
     }
 
     private void addVertexOnEdge(Point2D point) {

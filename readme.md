@@ -1,4 +1,4 @@
-Aplikacja zakłada, że każda krawędź ma maksymalnie jedną relację prostopadłości i długości
+Projekt pisany w wersji JAVA 11
 
 Przyciski
 Esc - anuluje rysowanie
